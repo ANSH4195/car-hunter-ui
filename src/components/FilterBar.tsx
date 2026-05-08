@@ -107,7 +107,7 @@ function FilterControls({
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="all">Any Year</SelectItem>
-						{[2019, 2020, 2021, 2022, 2023, 2024].map((y) => (
+						{[2018, 2019, 2020, 2021, 2022, 2023, 2024].map((y) => (
 							<SelectItem key={y} value={y.toString()}>
 								{y}+
 							</SelectItem>
