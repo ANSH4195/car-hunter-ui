@@ -5,6 +5,61 @@ Format: reverse-chronological sessions. Each entry covers goal, actions taken, b
 
 ---
 
+## 2026-05-08 — Session 2: Data Layer (Chunk 2)
+
+**Goal:** Install Supabase, create the typed data hook, and verify a real network call works end-to-end before building any UI.
+
+### Actions taken
+
+1. **`pnpm add @supabase/supabase-js`** — added v2.105.3.
+2. **`src/lib/supabase.ts`** — `createClient` wired to `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. Env vars prefixed `VITE_` so Vite exposes them to the browser bundle.
+3. **`src/hooks/useListings.ts`** — `Listing` type derived directly from `schema.sql` (not the migration doc, which was missing the `state` column added in a later migration). `useListings()` hook with `hide()` (soft-delete) and `remove()` (hard-delete). Optimistic local state update on both — removes the row from state immediately rather than waiting for a re-fetch.
+4. **`src/App.tsx`** — replaced placeholder with smoke-test: shows loading state, error state, and listing count. Will be replaced by full grid in Chunk 4.
+5. **`.env.example`** — committed as template; `.env.local` stays git-ignored via `*.local` in `.gitignore`.
+6. **Biome config migration** — `biome.json` was on schema v1.8.2, CLI is v2.2.5. Ran `biome migrate --write` which moved `organizeImports` → `assist.actions.source.organizeImports`.
+7. **Biome CSS override** — added `overrides` block to disable `noUnknownAtRules` for CSS files. See Blocker 1.
+
+### Blockers
+
+**B1 — Biome flagging Tailwind v4 at-rules as unknown**
+- _What:_ Biome lint rule `suspicious/noUnknownAtRules` errors on `@custom-variant` and `@theme inline`, which are Tailwind v4-specific at-rules not in the CSS spec and therefore not in Biome's allowlist.
+- _Resolution:_ Added `overrides` in `biome.json` to turn off `noUnknownAtRules` for `**/*.css`. This is intentional and scoped — TS/JS files are unaffected.
+- _Why not suppress per-line:_ The two at-rules are at the top of `index.css` and will never be removed; a blanket CSS override is cleaner than two `biome-ignore` comments.
+
+**B2 — `Listing` type mismatch with migration doc**
+- _What:_ The migration doc's `useListings.ts` snippet was missing the `state text` column that was added in a later migration (`schema.sql` line 15). Using the doc verbatim would have caused a runtime type gap — the DB returns `state` but TypeScript wouldn't know about it.
+- _Resolution:_ Read `schema.sql` directly and derived the type from it. Added `state: string | null` to the `Listing` type.
+
+### Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Derive `Listing` type from `schema.sql`, not migration doc | Source of truth is the schema file; the doc is guidance, not spec |
+| Optimistic local state update on hide/remove | Avoids a full re-fetch round-trip; fast UX; fine for a personal tool where concurrent edits are impossible |
+| `error` field returned from hook | Surfaces DB errors in the UI rather than silently showing an empty list |
+
+### State at end of session
+
+- [x] `@supabase/supabase-js` installed
+- [x] `src/lib/supabase.ts` — client ready
+- [x] `src/hooks/useListings.ts` — typed hook with hide/remove
+- [x] `src/App.tsx` — smoke-test wired
+- [x] `pnpm run lint` clean
+- [x] `pnpm run build` clean
+- [ ] shadcn UI components not yet added (Card, Button, Sheet, Select, Dialog, Badge)
+- [ ] CarCard component not built
+- [ ] Layout + grid not built
+- [ ] Filter bar not built
+
+### Next steps (Chunk 3 — CarCard)
+
+1. `pnpm dlx shadcn@latest add card button badge dialog`
+2. Build `src/components/CarCard.tsx` — all fields, hide/delete buttons, image thumbnail
+3. Render a flat list of `CarCard` in `App.tsx`
+4. `pnpm run lint && pnpm run build`
+
+---
+
 ## 2026-05-08 — Session 1: Scaffold + shadcn Init (Chunk 1)
 
 **Goal:** Bootstrap the React project from the starter template, wire up Vite config, path aliases, and shadcn — so the repo builds cleanly and we have a component foundation to build on.
