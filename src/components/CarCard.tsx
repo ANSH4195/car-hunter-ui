@@ -120,36 +120,38 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
-						{listing.image_url && (
-							<button
-								type="button"
-								onClick={() => setImageOpen(true)}
-								className="block mx-auto mb-3 w-40 h-40 overflow-hidden rounded-lg bg-muted"
-								aria-label="View full image"
-							>
-								<img
-									src={listing.image_url}
-									alt={title}
-									className="h-full w-full object-cover"
-								/>
-							</button>
-						)}
-						<div className="flex flex-col items-center gap-1 mb-2 text-sm text-muted-foreground">
-							{listing.fuel && (
-								<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
+						<div className="flex gap-3 mb-2">
+							{listing.image_url && (
+								<button
+									type="button"
+									onClick={() => setImageOpen(true)}
+									className="shrink-0 w-24 h-24 overflow-hidden rounded-lg bg-muted"
+									aria-label="View full image"
+								>
+									<img
+										src={listing.image_url}
+										alt={title}
+										className="h-full w-full object-cover"
+									/>
+								</button>
 							)}
-							{listing.kms != null && (
-								<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
-							)}
-							{listing.transmission && (
-								<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
-							)}
-							{listing.location && (
-								<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
-							)}
-							{listing.color && (
-								<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
-							)}
+							<div className="flex flex-col justify-center gap-1 text-sm text-muted-foreground">
+								{listing.fuel && (
+									<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
+								)}
+								{listing.kms != null && (
+									<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
+								)}
+								{listing.transmission && (
+									<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
+								)}
+								{listing.location && (
+									<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
+								)}
+								{listing.color && (
+									<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
+								)}
+							</div>
 						</div>
 						<div className="flex justify-center gap-[8px] mb-2">
 							{Array.from({ length: 8 }).map((_, i) => (
