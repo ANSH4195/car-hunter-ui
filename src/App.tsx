@@ -44,7 +44,7 @@ function App() {
 					</p>
 				)}
 				{!loading && !error && filtered.length > 0 && (
-					<div className="rounded-lg border overflow-hidden">
+					<div className="overflow-hidden">
 						{filtered.map((listing) => (
 							<CarCard
 								key={listing.id}

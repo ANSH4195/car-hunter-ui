@@ -105,7 +105,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 							e.stopPropagation();
 							setExpanded((v) => !v);
 						}}
-						className="shrink-0 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+						className="shrink-0 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors border-l"
 						aria-label={expanded ? "Collapse" : "Expand"}
 					>
 						{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
