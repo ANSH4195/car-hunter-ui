@@ -125,7 +125,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 								<button
 									type="button"
 									onClick={() => setImageOpen(true)}
-									className="shrink-0 w-24 self-stretch overflow-hidden rounded-lg bg-muted"
+									className="shrink-0 w-24 h-24 overflow-hidden rounded-lg bg-muted"
 									aria-label="View full image"
 								>
 									<img
