@@ -1,14 +1,7 @@
-import { EyeOff, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, EyeOff, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Listing } from "@/hooks/useListings";
 
@@ -31,6 +24,12 @@ function formatKms(kms: number | null) {
 
 export function CarCard({ listing, onHide, onRemove }: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
+	const [expanded, setExpanded] = useState(false);
+
+	const logoSlug = listing.make?.toLowerCase().replace(/\s+/g, "-");
+	const logoUrl = logoSlug ? `/car-hunter-ui/logos/${logoSlug}.png` : null;
+
+	const modelText = [listing.model, listing.variant].filter(Boolean).join(" ");
 
 	const title = [listing.make, listing.model, listing.variant]
 		.filter(Boolean)
@@ -40,54 +39,102 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 		listing.price ??
 		Math.min(...Object.values(listing.sources ?? {}).map((s) => s.price));
 
+	const primaryUrl = Object.values(listing.sources ?? {})[0]?.url;
+
+	const handleTileClick = () => {
+		if (primaryUrl) window.open(primaryUrl, "_blank", "noreferrer");
+	};
+
 	return (
 		<>
-			<Card className="flex flex-col">
-				{listing.image_url && (
-					<button
-						type="button"
-						onClick={() => setImageOpen(true)}
-						className="w-full overflow-hidden rounded-t-xl"
-						aria-label="View full image"
-					>
-						<img
-							src={listing.image_url}
-							alt={title}
-							className="h-48 w-full object-contain transition-transform hover:scale-105"
-						/>
-					</button>
-				)}
+			<div className="border-b last:border-b-0">
+				{/* Tile row — clicking goes to link */}
+				<div
+					role="link"
+					tabIndex={0}
+					onClick={handleTileClick}
+					onKeyDown={(e) => e.key === "Enter" && handleTileClick()}
+					className="flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
+				>
+					{listing.image_url ? (
+						<button
+							type="button"
+							onClick={(e) => {
+								e.stopPropagation();
+								setImageOpen(true);
+							}}
+							className="shrink-0 w-12 h-12 overflow-hidden rounded"
+							aria-label="View full image"
+						>
+							<img
+								src={listing.image_url}
+								alt={title}
+								className="h-full w-full object-contain"
+							/>
+						</button>
+					) : (
+						<div className="shrink-0 w-12 h-12 rounded bg-muted" />
+					)}
 
-				<CardHeader>
-					<CardTitle>{title}</CardTitle>
-					<p className="text-2xl font-bold text-foreground">
-						{formatPrice(lowestPrice)}
-					</p>
-				</CardHeader>
-
-				<CardContent className="flex flex-col gap-2">
-					<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
-						{listing.year && <span>Year: {listing.year}</span>}
-						{listing.kms != null && (
-							<span>KMs: {formatKms(listing.kms)}</span>
-						)}
-						{listing.color && <span>Colour: {listing.color}</span>}
-						{listing.transmission && (
-							<span>{listing.transmission}</span>
-						)}
-						{listing.location && <span>{listing.location}</span>}
-						{listing.fuel && <span>{listing.fuel}</span>}
+					<div className="flex-1 min-w-0 py-2 pr-2">
+						<p className="flex items-center gap-1.5 text-sm font-medium leading-snug overflow-hidden">
+							{listing.year && <span>{listing.year}</span>}
+							{logoUrl && (
+								<img
+									src={logoUrl}
+									alt={listing.make ?? ""}
+									className="h-4 w-4 object-contain shrink-0"
+									onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+								/>
+							)}
+							{modelText && <span className="truncate">{modelText}</span>}
+						</p>
+						<p className="text-sm text-muted-foreground">
+							<span className="font-semibold text-foreground">
+								{formatPrice(lowestPrice)}
+							</span>
+							{listing.kms != null && (
+								<span> · {formatKms(listing.kms)}</span>
+							)}
+						</p>
 					</div>
 
-					{Object.keys(listing.sources ?? {}).length > 0 && (
-						<div className="flex flex-wrap gap-1.5 mt-1">
-							{Object.entries(listing.sources).map(
-								([source, { url }]) => (
+					<button
+						type="button"
+						onClick={(e) => {
+							e.stopPropagation();
+							setExpanded((v) => !v);
+						}}
+						className="shrink-0 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+						aria-label={expanded ? "Collapse" : "Expand"}
+					>
+						{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+					</button>
+				</div>
+
+				{/* Expanded details — clicks don't navigate */}
+				{expanded && (
+					<div
+						className="px-3 pb-3 pt-1 bg-muted/30"
+						onClick={(e) => e.stopPropagation()}
+						onKeyDown={(e) => e.stopPropagation()}
+					>
+						<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
+							{listing.color && <span>Colour: {listing.color}</span>}
+							{listing.transmission && <span>{listing.transmission}</span>}
+							{listing.location && <span>{listing.location}</span>}
+							{listing.fuel && <span>{listing.fuel}</span>}
+						</div>
+
+						{Object.keys(listing.sources ?? {}).length > 0 && (
+							<div className="flex flex-wrap gap-1.5 mb-2">
+								{Object.entries(listing.sources).map(([source, { url }]) => (
 									<a
 										key={source}
 										href={url}
 										target="_blank"
 										rel="noreferrer"
+										onClick={(e) => e.stopPropagation()}
 									>
 										<Badge
 											variant="outline"
@@ -96,45 +143,33 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 											{source}
 										</Badge>
 									</a>
-								),
-							)}
-						</div>
-					)}
-				</CardContent>
+								))}
+							</div>
+						)}
 
-				<CardFooter className="mt-auto justify-between gap-2">
-					<div className="flex gap-1">
-						<Button
-							variant="ghost"
-							size="icon-sm"
-							onClick={() => onHide(listing.id)}
-							aria-label="Hide listing"
-							className="text-muted-foreground hover:text-foreground"
-						>
-							<EyeOff />
-						</Button>
-						<Button
-							variant="ghost"
-							size="icon-sm"
-							onClick={() => onRemove(listing.id)}
-							aria-label="Delete listing"
-							className="text-muted-foreground hover:text-destructive"
-						>
-							<Trash2 />
-						</Button>
+						<div className="flex gap-1">
+							<Button
+								variant="ghost"
+								size="icon-sm"
+								onClick={() => onHide(listing.id)}
+								aria-label="Hide listing"
+								className="text-muted-foreground hover:text-foreground"
+							>
+								<EyeOff />
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon-sm"
+								onClick={() => onRemove(listing.id)}
+								aria-label="Delete listing"
+								className="text-muted-foreground hover:text-destructive"
+							>
+								<Trash2 />
+							</Button>
+						</div>
 					</div>
-					{Object.values(listing.sources ?? {})[0]?.url && (
-						<a
-							href={Object.values(listing.sources)[0].url}
-							target="_blank"
-							rel="noreferrer"
-							className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-						>
-							View &rsaquo;
-						</a>
-					)}
-				</CardFooter>
-			</Card>
+				)}
+			</div>
 
 			{listing.image_url && (
 				<Dialog open={imageOpen} onOpenChange={setImageOpen}>
