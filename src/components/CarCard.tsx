@@ -55,24 +55,26 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 					onKeyDown={(e) => e.key === "Enter" && handleTileClick()}
 					className="flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
 				>
-					{listing.image_url ? (
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								setImageOpen(true);
-							}}
-							className="shrink-0 w-12 h-12 overflow-hidden rounded"
-							aria-label="View full image"
-						>
-							<img
-								src={listing.image_url}
-								alt={title}
-								className="h-full w-full object-contain"
-							/>
-						</button>
-					) : (
-						<div className="shrink-0 w-12 h-12 rounded bg-muted" />
+					{!expanded && (
+						listing.image_url ? (
+							<button
+								type="button"
+								onClick={(e) => {
+									e.stopPropagation();
+									setImageOpen(true);
+								}}
+								className="shrink-0 w-12 h-12 overflow-hidden rounded"
+								aria-label="View full image"
+							>
+								<img
+									src={listing.image_url}
+									alt={title}
+									className="h-full w-full object-contain"
+								/>
+							</button>
+						) : (
+							<div className="shrink-0 w-12 h-12 rounded bg-muted" />
+						)
 					)}
 
 					<div className="flex-1 min-w-0 py-2 pr-2">
@@ -118,6 +120,20 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
+						{listing.image_url && (
+							<button
+								type="button"
+								onClick={() => setImageOpen(true)}
+								className="block mx-auto mb-3 w-40 h-40 overflow-hidden rounded-lg bg-muted"
+								aria-label="View full image"
+							>
+								<img
+									src={listing.image_url}
+									alt={title}
+									className="h-full w-full object-cover"
+								/>
+							</button>
+						)}
 						<div className="flex flex-col items-center gap-1 mb-2 text-sm text-muted-foreground">
 							{listing.fuel && (
 								<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
