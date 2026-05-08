@@ -53,7 +53,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						<img
 							src={listing.image_url}
 							alt={title}
-							className="h-48 w-full object-cover transition-transform hover:scale-105"
+							className="h-48 w-full object-contain transition-transform hover:scale-105"
 						/>
 					</button>
 				)}
