@@ -5,6 +5,68 @@ Format: reverse-chronological sessions. Each entry covers goal, actions taken, b
 
 ---
 
+## 2026-05-08 — Session 4: Deploy Workflow (Chunk 7)
+
+**Goal:** Add GitHub Actions workflow to build and deploy to GitHub Pages on every push to `main`.
+
+### Actions taken
+
+1. **`.github/workflows/deploy.yml`** — uses `pnpm/action-setup@v4`, `actions/setup-node@v4` (Node 22), builds with Vite, deploys via `peaceiris/actions-gh-pages@v4`. Supabase env vars injected from repository secrets `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+
+### Pending manual step
+
+Before the first deploy will succeed: in the GitHub repo settings → Pages → Source, set branch to `gh-pages` / root. Also add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as repository secrets.
+
+### State at end of session
+
+- [x] All 7 chunks complete
+- [x] `pnpm run lint` clean
+- [x] `pnpm run build` clean
+- [ ] Not yet pushed to GitHub remote (user needs to push)
+- [ ] `.env.local` not created — user needs to copy `.env.example` and fill in keys before running `pnpm run dev`
+
+---
+
+## 2026-05-08 — Session 3: CarCard + Layout + Filter Bar (Chunks 3, 4, 5, 6)
+
+**Goal:** Build the full UI — cards with all fields, image modal, hide/delete, sticky header, two-column grid, desktop filter bar, mobile Sheet.
+
+### Actions taken
+
+1. **shadcn components** — added `card`, `button`, `badge`, `dialog` (Chunk 3), then `sheet`, `select` (Chunks 4+5) via `pnpm dlx shadcn@latest add`.
+2. **Fixed shadcn path resolution (Blocker 1)** — see below.
+3. **`src/components/CarCard.tsx`** — image thumbnail (clickable), specs grid, source badges (linked), hide (EyeOff) + delete (Trash2) ghost icon buttons, fullscreen Dialog on image click. Price formatted as `₹X.XL` (lakhs). Image modal uses `DialogTitle` with `sr-only` for accessibility.
+4. **`src/hooks/useFilters.ts`** — client-side filter state: make, minYear, maxKms, sort. `useMemo` on filtered+sorted array. Non-null assertions replaced with locally narrowed const variables (Blocker 2).
+5. **`src/components/FilterBar.tsx`** — desktop: horizontally scrollable flex row pinned below header; mobile: hamburger button opens shadcn `Sheet` from right. `FilterControls` extracted as shared inner component to avoid duplication.
+6. **`App.tsx`** — sticky header with listing count, FilterBar wired, 2-col grid at `md` breakpoint, empty states for loading/error/no-results.
+
+### Blockers
+
+**B1 — shadcn wrote components to `@/components/ui/` literally**
+- _What:_ `pnpm dlx shadcn@latest add card button badge dialog` created an `@/` directory at the repo root instead of resolving the alias to `src/`. The root `tsconfig.json` only had project references (no `compilerOptions.paths`), so shadcn couldn't resolve `@/*`.
+- _Resolution:_ Added `compilerOptions.baseUrl` and `paths` to root `tsconfig.json` (shadcn reads this, not `tsconfig.app.json`). Moved the four component files from `@/components/ui/` to `src/components/ui/` with `mv`. Subsequent `shadcn add` commands wrote correctly to `src/`.
+
+**B2 — Biome `noNonNullAssertion` warnings on filter logic**
+- _What:_ `filters.make!` etc. inside `if (filters.make)` blocks passed TypeScript but Biome flagged the `!` assertions as warnings.
+- _Resolution:_ Replaced `filters.make!` with `const make = filters.make; ... make` — TypeScript narrows the `const` to non-null inside the `if` block automatically. Cleaner than suppression comments.
+
+### Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Chunks 4 (Layout) + 5 (Filter bar) done in one commit | They share state — `App.tsx` needed both the layout shell and the filter wiring at the same time. Separating would have left `App.tsx` in a half-wired state between commits. |
+| Chunk 6 (Image modal) already done inside CarCard | The Dialog on thumbnail click was the natural place for it; no separate chunk needed. |
+| `FilterControls` as inner function, not exported component | Only used in two places inside `FilterBar.tsx`; exporting it would be premature API surface |
+| Price displayed in lakhs (₹X.XL) | Indian market convention — same as Streamlit app |
+
+### State at end of session
+
+- [x] All UI chunks (3–6) complete: CarCard, layout, filter bar, image modal
+- [x] `pnpm run lint` clean
+- [x] `pnpm run build` clean (chunk size warning is informational, not a failure)
+
+---
+
 ## 2026-05-08 — Session 2: Data Layer (Chunk 2)
 
 **Goal:** Install Supabase, create the typed data hook, and verify a real network call works end-to-end before building any UI.
