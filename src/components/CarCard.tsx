@@ -120,7 +120,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
-						<div className="flex gap-3 mb-2">
+						<div className="flex items-center gap-3 mb-2">
 							{listing.image_url && (
 								<button
 									type="button"
