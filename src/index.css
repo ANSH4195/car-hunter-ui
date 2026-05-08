@@ -71,6 +71,15 @@
 	--radius-xl: calc(var(--radius) + 4px);
 }
 
+@keyframes remove-card {
+	0%   { transform: translateY(0) scale(1); opacity: 1; }
+	100% { transform: translateY(-32px) scale(1.25); opacity: 0; }
+}
+
+.animate-remove-card {
+	animation: remove-card 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 * {
 	border-color: var(--border);
 }

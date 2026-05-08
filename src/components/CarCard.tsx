@@ -24,6 +24,12 @@ function formatKms(kms: number | null) {
 export function CarCard({ listing, onHide, onRemove }: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
 	const [expanded, setExpanded] = useState(false);
+	const [removing, setRemoving] = useState(false);
+
+	const handleRemove = () => {
+		setRemoving(true);
+		setTimeout(() => onRemove(listing.id), 500);
+	};
 
 	const logoSlug = listing.make?.toLowerCase().replace(/\s+/g, "-");
 	const logoUrl = logoSlug ? `/car-hunter-ui/logos/${logoSlug}.png` : null;
@@ -46,7 +52,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 
 	return (
 		<>
-			<div className="border-b last:border-b-0">
+			<div className={`border-b last:border-b-0${removing ? " animate-remove-card pointer-events-none" : ""}`}>
 				{/* Tile row — clicking goes to link */}
 				<div
 					role="link"
@@ -172,7 +178,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 										<Button
 											variant="ghost"
 											size="icon-sm"
-											onClick={() => onRemove(listing.id)}
+											onClick={handleRemove}
 											aria-label="Delete listing"
 											className="text-muted-foreground hover:text-destructive"
 										>

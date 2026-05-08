@@ -39,16 +39,20 @@ export function useListings() {
 	}, []);
 
 	const hide = async (id: string) => {
+		const prev = listings;
+		setListings((l) => l.filter((x) => x.id !== id));
 		const { error } = await supabase
 			.from("listings")
 			.update({ is_active: false })
 			.eq("id", id);
-		if (!error) setListings((l) => l.filter((x) => x.id !== id));
+		if (error) setListings(prev);
 	};
 
 	const remove = async (id: string) => {
+		const prev = listings;
+		setListings((l) => l.filter((x) => x.id !== id));
 		const { error } = await supabase.from("listings").delete().eq("id", id);
-		if (!error) setListings((l) => l.filter((x) => x.id !== id));
+		if (error) setListings(prev);
 	};
 
 	return { listings, loading, error, hide, remove };
