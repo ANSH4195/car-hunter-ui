@@ -106,7 +106,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 							e.stopPropagation();
 							setExpanded((v) => !v);
 						}}
-						className="shrink-0 px-3 py-2 text-muted-foreground hover:text-foreground transition-colors border-l"
+						className="shrink-0 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors border-l"
 						aria-label={expanded ? "Collapse" : "Expand"}
 					>
 						{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -120,7 +120,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
-						<div className="flex gap-3">
+						<div className="flex items-center gap-3">
 							{listing.image_url && (
 								<button
 									type="button"
@@ -131,7 +131,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 									<img
 										src={listing.image_url}
 										alt={title}
-										className="h-full w-full object-cover"
+										className="h-full w-full object-contain"
 									/>
 								</button>
 							)}
@@ -153,7 +153,12 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 										<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
 									)}
 								</div>
-								<div className="flex items-center justify-between mt-2">
+								<div className="flex justify-center gap-[8px] my-2">
+									{Array.from({ length: 8 }).map((_, i) => (
+										<div key={i} className="w-[3px] h-[3px] rounded-full bg-border" />
+									))}
+								</div>
+								<div className="flex items-center justify-between">
 									<div className="flex gap-1">
 										<Button
 											variant="ghost"
