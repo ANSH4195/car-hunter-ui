@@ -102,25 +102,37 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 					)}
 				</CardContent>
 
-				<CardFooter className="mt-auto justify-end gap-2">
-					<Button
-						variant="ghost"
-						size="icon-sm"
-						onClick={() => onHide(listing.id)}
-						aria-label="Hide listing"
-						className="text-muted-foreground hover:text-foreground"
-					>
-						<EyeOff />
-					</Button>
-					<Button
-						variant="ghost"
-						size="icon-sm"
-						onClick={() => onRemove(listing.id)}
-						aria-label="Delete listing"
-						className="text-muted-foreground hover:text-destructive"
-					>
-						<Trash2 />
-					</Button>
+				<CardFooter className="mt-auto justify-between gap-2">
+					<div className="flex gap-1">
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							onClick={() => onHide(listing.id)}
+							aria-label="Hide listing"
+							className="text-muted-foreground hover:text-foreground"
+						>
+							<EyeOff />
+						</Button>
+						<Button
+							variant="ghost"
+							size="icon-sm"
+							onClick={() => onRemove(listing.id)}
+							aria-label="Delete listing"
+							className="text-muted-foreground hover:text-destructive"
+						>
+							<Trash2 />
+						</Button>
+					</div>
+					{Object.values(listing.sources ?? {})[0]?.url && (
+						<a
+							href={Object.values(listing.sources)[0].url}
+							target="_blank"
+							rel="noreferrer"
+							className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+						>
+							View &rsaquo;
+						</a>
+					)}
 				</CardFooter>
 			</Card>
 
