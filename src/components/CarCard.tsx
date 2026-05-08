@@ -120,12 +120,12 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
-						<div className="flex items-center gap-3 mb-2">
+						<div className="flex gap-3">
 							{listing.image_url && (
 								<button
 									type="button"
 									onClick={() => setImageOpen(true)}
-									className="shrink-0 w-24 h-24 overflow-hidden rounded-lg bg-muted"
+									className="shrink-0 w-24 self-stretch overflow-hidden rounded-lg bg-muted"
 									aria-label="View full image"
 								>
 									<img
@@ -135,72 +135,67 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 									/>
 								</button>
 							)}
-							<div className="flex flex-col justify-center gap-1 text-sm text-muted-foreground">
-								{listing.fuel && (
-									<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
-								)}
-								{listing.kms != null && (
-									<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
-								)}
-								{listing.transmission && (
-									<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
-								)}
-								{listing.location && (
-									<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
-								)}
-								{listing.color && (
-									<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
-								)}
-							</div>
-						</div>
-						<div className="flex justify-center gap-[8px] mb-2">
-							{Array.from({ length: 8 }).map((_, i) => (
-								<div key={i} className="w-[4px] h-[4px] rounded-full bg-border" />
-							))}
-						</div>
-						<div className="grid grid-cols-3 items-center">
-							<div />
-							<div className="flex justify-center gap-1">
-								<Button
-									variant="ghost"
-									size="icon-sm"
-									onClick={() => onHide(listing.id)}
-									aria-label="Hide listing"
-									className="text-muted-foreground hover:text-foreground"
-								>
-									<EyeOff />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon-sm"
-									onClick={() => onRemove(listing.id)}
-									aria-label="Delete listing"
-									className="text-muted-foreground hover:text-destructive"
-								>
-									<Trash2 />
-								</Button>
-							</div>
-
-							{Object.keys(listing.sources ?? {}).length > 0 && (
-								<div className="flex gap-1.5 justify-end">
-									{Object.entries(listing.sources).map(([source, { url }]) => (
-										<a
-											key={source}
-											href={url}
-											target="_blank"
-											rel="noreferrer"
-											onClick={(e) => e.stopPropagation()}
-											title={source}
-										>
-											<img
-												src={`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`}
-												alt={source}
-												className="w-5 h-5 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
-											/>
-										</a>
-									))}
+							<div className="flex-1 flex flex-col justify-between">
+								<div className="flex flex-col gap-1 text-sm text-muted-foreground">
+									{listing.fuel && (
+										<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
+									)}
+									{listing.kms != null && (
+										<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
+									)}
+									{listing.transmission && (
+										<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
+									)}
+									{listing.location && (
+										<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
+									)}
+									{listing.color && (
+										<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
+									)}
 								</div>
-							)}
+								<div className="flex items-center justify-between mt-2">
+									<div className="flex gap-1">
+										<Button
+											variant="ghost"
+											size="icon-sm"
+											onClick={() => onHide(listing.id)}
+											aria-label="Hide listing"
+											className="text-muted-foreground hover:text-foreground"
+										>
+											<EyeOff />
+										</Button>
+										<Button
+											variant="ghost"
+											size="icon-sm"
+											onClick={() => onRemove(listing.id)}
+											aria-label="Delete listing"
+											className="text-muted-foreground hover:text-destructive"
+										>
+											<Trash2 />
+										</Button>
+									</div>
+									{Object.keys(listing.sources ?? {}).length > 0 && (
+										<div className="flex gap-1.5">
+											{Object.entries(listing.sources).map(([source, { url }]) => (
+												<a
+													key={source}
+													href={url}
+													target="_blank"
+													rel="noreferrer"
+													onClick={(e) => e.stopPropagation()}
+													title={source}
+												>
+													<img
+														src={`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`}
+														alt={source}
+														className="w-5 h-5 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+													/>
+												</a>
+											))}
+										</div>
+									)}
+								</div>
+							</div>
 						</div>
 					</div>
 				)}
