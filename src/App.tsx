@@ -1,31 +1,57 @@
+import { useState } from "react";
 import { CarCard } from "./components/CarCard";
+import { FilterBar } from "./components/FilterBar";
+import { useFilters } from "./hooks/useFilters";
 import { useListings } from "./hooks/useListings";
 
 function App() {
 	const { listings, loading, error, hide, remove } = useListings();
-
-	if (loading)
-		return <p className="p-4 text-muted-foreground">Loading listings…</p>;
-	if (error) return <p className="p-4 text-destructive">Error: {error}</p>;
+	const { filters, filtered, update } = useFilters(listings);
+	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
 	return (
-		<main className="p-4">
-			<h1 className="text-2xl font-bold mb-4">Car Hunter</h1>
-			{listings.length === 0 ? (
-				<p className="text-muted-foreground">No active listings.</p>
-			) : (
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					{listings.map((listing) => (
-						<CarCard
-							key={listing.id}
-							listing={listing}
-							onHide={hide}
-							onRemove={remove}
-						/>
-					))}
-				</div>
-			)}
-		</main>
+		<div className="min-h-screen bg-background">
+			<header className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between">
+				<h1 className="text-lg font-semibold">Car Hunter</h1>
+				{!loading && !error && (
+					<span className="text-sm text-muted-foreground">
+						{filtered.length} listing
+						{filtered.length !== 1 ? "s" : ""}
+					</span>
+				)}
+			</header>
+
+			<FilterBar
+				filters={filters}
+				onChange={update}
+				mobileOpen={mobileFiltersOpen}
+				onMobileOpenChange={setMobileFiltersOpen}
+			/>
+
+			<main className="p-4">
+				{loading && (
+					<p className="text-muted-foreground">Loading listings…</p>
+				)}
+				{error && <p className="text-destructive">Error: {error}</p>}
+				{!loading && !error && filtered.length === 0 && (
+					<p className="text-muted-foreground">
+						No listings match your filters.
+					</p>
+				)}
+				{!loading && !error && filtered.length > 0 && (
+					<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+						{filtered.map((listing) => (
+							<CarCard
+								key={listing.id}
+								listing={listing}
+								onHide={hide}
+								onRemove={remove}
+							/>
+						))}
+					</div>
+				)}
+			</main>
+		</div>
 	);
 }
 
