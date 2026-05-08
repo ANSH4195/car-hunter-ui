@@ -1,6 +1,5 @@
-import { ChevronDown, ChevronUp, EyeOff, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Droplet, EyeOff, Fuel, Gauge, MapPin, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Listing } from "@/hooks/useListings";
@@ -119,53 +118,71 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 						onClick={(e) => e.stopPropagation()}
 						onKeyDown={(e) => e.stopPropagation()}
 					>
-						<div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mb-2">
-							{listing.color && <span>Colour: {listing.color}</span>}
-							{listing.transmission && <span>{listing.transmission}</span>}
-							{listing.location && <span>{listing.location}</span>}
-							{listing.fuel && <span>{listing.fuel}</span>}
+						<div className="flex flex-col items-center gap-1 mb-2 text-sm text-muted-foreground">
+							{listing.fuel && (
+								<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
+							)}
+							{listing.kms != null && (
+								<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
+							)}
+							{listing.transmission && (
+								<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
+							)}
+							{listing.location && (
+								<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
+							)}
+							{listing.color && (
+								<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
+							)}
 						</div>
-
-						{Object.keys(listing.sources ?? {}).length > 0 && (
-							<div className="flex flex-wrap gap-1.5 mb-2">
-								{Object.entries(listing.sources).map(([source, { url }]) => (
-									<a
-										key={source}
-										href={url}
-										target="_blank"
-										rel="noreferrer"
-										onClick={(e) => e.stopPropagation()}
-									>
-										<Badge
-											variant="outline"
-											className="capitalize cursor-pointer hover:bg-muted"
-										>
-											{source}
-										</Badge>
-									</a>
-								))}
+						<div className="flex justify-center gap-[8px] mb-2">
+							{Array.from({ length: 8 }).map((_, i) => (
+								<div key={i} className="w-[4px] h-[4px] rounded-full bg-border" />
+							))}
+						</div>
+						<div className="grid grid-cols-3 items-center">
+							<div />
+							<div className="flex justify-center gap-1">
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									onClick={() => onHide(listing.id)}
+									aria-label="Hide listing"
+									className="text-muted-foreground hover:text-foreground"
+								>
+									<EyeOff />
+								</Button>
+								<Button
+									variant="ghost"
+									size="icon-sm"
+									onClick={() => onRemove(listing.id)}
+									aria-label="Delete listing"
+									className="text-muted-foreground hover:text-destructive"
+								>
+									<Trash2 />
+								</Button>
 							</div>
-						)}
 
-						<div className="flex gap-1">
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								onClick={() => onHide(listing.id)}
-								aria-label="Hide listing"
-								className="text-muted-foreground hover:text-foreground"
-							>
-								<EyeOff />
-							</Button>
-							<Button
-								variant="ghost"
-								size="icon-sm"
-								onClick={() => onRemove(listing.id)}
-								aria-label="Delete listing"
-								className="text-muted-foreground hover:text-destructive"
-							>
-								<Trash2 />
-							</Button>
+							{Object.keys(listing.sources ?? {}).length > 0 && (
+								<div className="flex gap-1.5 justify-end">
+									{Object.entries(listing.sources).map(([source, { url }]) => (
+										<a
+											key={source}
+											href={url}
+											target="_blank"
+											rel="noreferrer"
+											onClick={(e) => e.stopPropagation()}
+											title={source}
+										>
+											<img
+												src={`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=32`}
+												alt={source}
+												className="w-5 h-5 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+											/>
+										</a>
+									))}
+								</div>
+							)}
 						</div>
 					</div>
 				)}
