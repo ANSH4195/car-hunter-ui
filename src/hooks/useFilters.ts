@@ -22,8 +22,29 @@ const DEFAULT_FILTERS: Filters = {
 	sort: "first_seen_desc",
 };
 
+function readFromUrl(): Filters {
+	const p = new URLSearchParams(window.location.search);
+	const sort = p.get("sort") as SortKey | null;
+	return {
+		make: p.get("make"),
+		minYear: p.get("year") ? Number(p.get("year")) : null,
+		maxKms: p.get("kms") ? Number(p.get("kms")) : null,
+		sort: sort ?? "first_seen_desc",
+	};
+}
+
+function writeToUrl(f: Filters) {
+	const p = new URLSearchParams();
+	if (f.make) p.set("make", f.make);
+	if (f.minYear) p.set("year", String(f.minYear));
+	if (f.maxKms) p.set("kms", String(f.maxKms));
+	if (f.sort !== "first_seen_desc") p.set("sort", f.sort);
+	const qs = p.toString();
+	history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+}
+
 export function useFilters(listings: Listing[]) {
-	const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+	const [filters, setFilters] = useState<Filters>(() => readFromUrl());
 
 	const filtered = useMemo(() => {
 		let result = listings;
@@ -63,7 +84,16 @@ export function useFilters(listings: Listing[]) {
 	}, [listings, filters]);
 
 	const update = (partial: Partial<Filters>) =>
-		setFilters((prev) => ({ ...prev, ...partial }));
+		setFilters((prev) => {
+			const next = { ...prev, ...partial };
+			writeToUrl(next);
+			return next;
+		});
 
-	return { filters, filtered, update };
+	const reset = () => {
+		setFilters(DEFAULT_FILTERS);
+		writeToUrl(DEFAULT_FILTERS);
+	};
+
+	return { filters, filtered, update, reset };
 }

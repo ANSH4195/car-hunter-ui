@@ -39,6 +39,7 @@ const SORT_OPTIONS = [
 type Props = {
 	filters: Filters;
 	onChange: (f: Partial<Filters>) => void;
+	onReset: () => void;
 	mobileOpen: boolean;
 	onMobileOpenChange: (open: boolean) => void;
 };
@@ -189,6 +190,7 @@ export function MobileFilterButton({ onOpen }: { onOpen: () => void }) {
 export function FilterBar({
 	filters,
 	onChange,
+	onReset,
 	mobileOpen,
 	onMobileOpenChange,
 }: Props) {
@@ -220,12 +222,17 @@ export function FilterBar({
 						</SheetClose>
 					</div>
 					<hr className="border-border" />
-					<div className="flex flex-col gap-4 px-4 pt-4">
+					<div className="flex flex-col gap-4 px-4 pt-4 flex-1">
 						<FilterControls
 							filters={filters}
 							onChange={onChange}
 							showLabels
 						/>
+					</div>
+					<div className="px-4 py-4 border-t mt-auto">
+						<Button variant="outline" className="w-full" onClick={onReset}>
+							Reset filters
+						</Button>
 					</div>
 				</SheetContent>
 			</Sheet>

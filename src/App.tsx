@@ -6,7 +6,7 @@ import { useListings } from "./hooks/useListings";
 
 function App() {
 	const { listings, loading, error, hide, remove } = useListings();
-	const { filters, filtered, update } = useFilters(listings);
+	const { filters, filtered, update, reset } = useFilters(listings);
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
 	return (
@@ -29,6 +29,7 @@ function App() {
 			<FilterBar
 				filters={filters}
 				onChange={update}
+				onReset={reset}
 				mobileOpen={mobileFiltersOpen}
 				onMobileOpenChange={setMobileFiltersOpen}
 			/>
