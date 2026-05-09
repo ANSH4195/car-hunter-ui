@@ -21,6 +21,11 @@ function formatKms(kms: number | null) {
 	return `${kms.toLocaleString("en-IN")} km`;
 }
 
+function formatKmsShort(kms: number | null) {
+	if (kms == null) return "—";
+	return `${Math.ceil(kms / 1000)}K km`;
+}
+
 export function CarCard({ listing, onHide, onRemove }: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
 	const [expanded, setExpanded] = useState(false);
@@ -101,7 +106,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 								{formatPrice(lowestPrice)}
 							</span>
 							{listing.kms != null && (
-								<span> · {formatKms(listing.kms)}</span>
+								<span> · {formatKmsShort(listing.kms)}{listing.fuel ? ` • ${listing.fuel}` : ""}</span>
 							)}
 						</p>
 					</div>
