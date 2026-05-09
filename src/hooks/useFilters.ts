@@ -12,6 +12,7 @@ export type Filters = {
 	make: string | null;
 	minYear: number | null;
 	maxKms: number | null;
+	state: string | null;
 	sort: SortKey;
 };
 
@@ -19,6 +20,7 @@ const DEFAULT_FILTERS: Filters = {
 	make: null,
 	minYear: null,
 	maxKms: null,
+	state: null,
 	sort: "first_seen_desc",
 };
 
@@ -29,6 +31,7 @@ function readFromUrl(): Filters {
 		make: p.get("make"),
 		minYear: p.get("year") ? Number(p.get("year")) : null,
 		maxKms: p.get("kms") ? Number(p.get("kms")) : null,
+		state: p.get("state"),
 		sort: sort ?? "first_seen_desc",
 	};
 }
@@ -38,6 +41,7 @@ function writeToUrl(f: Filters) {
 	if (f.make) p.set("make", f.make);
 	if (f.minYear) p.set("year", String(f.minYear));
 	if (f.maxKms) p.set("kms", String(f.maxKms));
+	if (f.state) p.set("state", f.state);
 	if (f.sort !== "first_seen_desc") p.set("sort", f.sort);
 	const qs = p.toString();
 	history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
@@ -62,6 +66,12 @@ export function useFilters(listings: Listing[]) {
 		if (filters.maxKms) {
 			const maxKms = filters.maxKms;
 			result = result.filter((l) => (l.kms ?? Infinity) <= maxKms);
+		}
+		if (filters.state) {
+			const state = filters.state;
+			result = result.filter(
+				(l) => l.state?.toLowerCase() === state.toLowerCase(),
+			);
 		}
 
 		return [...result].sort((a, b) => {

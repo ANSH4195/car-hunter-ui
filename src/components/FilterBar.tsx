@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sheet";
 import type { Filters } from "@/hooks/useFilters";
 
+const STATES = ["Kerala", "Tamil Nadu"];
+
 const MAKES = [
 	"Audi",
 	"BMW",
@@ -85,6 +87,28 @@ function FilterControls({
 						{MAKES.map((m) => (
 							<SelectItem key={m} value={m}>
 								{m}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>,
+			)}
+
+			{wrap(
+				"State",
+				<Select
+					value={filters.state ?? "all"}
+					onValueChange={(v) =>
+						onChange({ state: v === "all" ? null : v })
+					}
+				>
+					<SelectTrigger className={tw("w-36")}>
+						<SelectValue>{filters.state ?? "All States"}</SelectValue>
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="all">All States</SelectItem>
+						{STATES.map((s) => (
+							<SelectItem key={s} value={s}>
+								{s}
 							</SelectItem>
 						))}
 					</SelectContent>

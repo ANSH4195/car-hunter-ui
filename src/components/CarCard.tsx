@@ -30,10 +30,16 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
 	const [expanded, setExpanded] = useState(false);
 	const [removing, setRemoving] = useState(false);
+	const [hiding, setHiding] = useState(false);
 
 	const handleRemove = () => {
 		setRemoving(true);
 		setTimeout(() => onRemove(listing.id), 500);
+	};
+
+	const handleHide = () => {
+		setHiding(true);
+		setTimeout(() => onHide(listing.id), 500);
 	};
 
 	const logoSlug = listing.make?.toLowerCase().replace(/\s+/g, "-");
@@ -57,7 +63,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 
 	return (
 		<>
-			<div className={`border-b last:border-b-0${removing ? " animate-remove-card pointer-events-none" : ""}`}>
+			<div className={`border-b last:border-b-0${removing ? " animate-remove-card pointer-events-none" : ""}${hiding ? " animate-hide-card pointer-events-none" : ""}`}>
 				{/* Tile row — clicking goes to link */}
 				<div
 					role="link"
@@ -174,7 +180,7 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 										<Button
 											variant="ghost"
 											size="icon-sm"
-											onClick={() => onHide(listing.id)}
+											onClick={handleHide}
 											aria-label="Hide listing"
 											className="text-muted-foreground hover:text-foreground"
 										>

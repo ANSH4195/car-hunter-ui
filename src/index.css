@@ -80,6 +80,15 @@
 	animation: remove-card 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+@keyframes hide-card {
+	0%   { transform: translateY(0) scale(1); opacity: 1; }
+	100% { transform: translateY(32px) scale(0.75); opacity: 0; }
+}
+
+.animate-hide-card {
+	animation: hide-card 500ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 * {
 	border-color: var(--border);
 }
