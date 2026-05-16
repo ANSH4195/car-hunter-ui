@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, Droplet, EyeOff, Fuel, Gauge, MapPin, Settings2, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Droplet, Eye, EyeOff, Fuel, Gauge, MapPin, Settings2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -6,8 +6,9 @@ import type { Listing } from "@/hooks/useListings";
 
 type Props = {
 	listing: Listing;
-	onHide: (id: string) => Promise<void>;
-	onRemove: (id: string) => Promise<void>;
+	onHide?: (id: string) => Promise<void>;
+	onRemove?: (id: string) => Promise<void>;
+	onRestore?: (id: string) => Promise<void>;
 };
 
 function formatPrice(price: number | null) {
@@ -26,20 +27,28 @@ function formatKmsShort(kms: number | null) {
 	return `${Math.ceil(kms / 1000)}K km`;
 }
 
-export function CarCard({ listing, onHide, onRemove }: Props) {
+export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
 	const [expanded, setExpanded] = useState(false);
 	const [removing, setRemoving] = useState(false);
 	const [hiding, setHiding] = useState(false);
 
 	const handleRemove = () => {
+		if (!onRemove) return;
 		setRemoving(true);
 		setTimeout(() => onRemove(listing.id), 500);
 	};
 
 	const handleHide = () => {
+		if (!onHide) return;
 		setHiding(true);
 		setTimeout(() => onHide(listing.id), 500);
+	};
+
+	const handleRestore = () => {
+		if (!onRestore) return;
+		setHiding(true);
+		setTimeout(() => onRestore(listing.id), 500);
 	};
 
 	const logoSlug = listing.make?.toLowerCase().replace(/\s+/g, "-");
@@ -177,24 +186,42 @@ export function CarCard({ listing, onHide, onRemove }: Props) {
 								</div>
 								<div className="flex items-center justify-between">
 									<div className="flex gap-1">
-										<Button
-											variant="ghost"
-											size="icon-sm"
-											onClick={handleHide}
-											aria-label="Hide listing"
-											className="text-muted-foreground hover:text-foreground"
-										>
-											<EyeOff />
-										</Button>
-										<Button
-											variant="ghost"
-											size="icon-sm"
-											onClick={handleRemove}
-											aria-label="Delete listing"
-											className="text-muted-foreground hover:text-destructive"
-										>
-											<Trash2 />
-										</Button>
+										{onRestore ? (
+											<Button
+												variant="ghost"
+												size="icon-sm"
+												onClick={handleRestore}
+												aria-label="Restore listing"
+												className="text-muted-foreground hover:text-foreground"
+											>
+												<Eye />
+											</Button>
+										) : (
+											<>
+												{onHide && (
+													<Button
+														variant="ghost"
+														size="icon-sm"
+														onClick={handleHide}
+														aria-label="Hide listing"
+														className="text-muted-foreground hover:text-foreground"
+													>
+														<EyeOff />
+													</Button>
+												)}
+												{onRemove && (
+													<Button
+														variant="ghost"
+														size="icon-sm"
+														onClick={handleRemove}
+														aria-label="Delete listing"
+														className="text-muted-foreground hover:text-destructive"
+													>
+														<Trash2 />
+													</Button>
+												)}
+											</>
+										)}
 									</div>
 									{Object.keys(listing.sources ?? {}).length > 0 && (
 										<div className="flex gap-1.5">

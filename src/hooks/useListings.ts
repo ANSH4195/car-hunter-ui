@@ -57,3 +57,34 @@ export function useListings() {
 
 	return { listings, loading, error, hide, remove };
 }
+
+export function useHiddenListings() {
+	const [listings, setListings] = useState<Listing[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		supabase
+			.from("listings")
+			.select("*")
+			.eq("is_active", false)
+			.order("first_seen", { ascending: false })
+			.then(({ data, error }) => {
+				if (error) setError(error.message);
+				else setListings(data ?? []);
+				setLoading(false);
+			});
+	}, []);
+
+	const restore = async (id: string) => {
+		const prev = listings;
+		setListings((l) => l.filter((x) => x.id !== id));
+		const { error } = await supabase
+			.from("listings")
+			.update({ is_active: true })
+			.eq("id", id);
+		if (error) setListings(prev);
+	};
+
+	return { listings, loading, error, restore };
+}

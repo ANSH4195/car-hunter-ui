@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { Menu, SlidersHorizontal, X } from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sheet";
 import type { Filters } from "@/hooks/useFilters";
 
-const STATES = ["Kerala", "Tamil Nadu"];
 
 const MAKES = [
 	"Audi",
@@ -44,16 +43,19 @@ type Props = {
 	onReset: () => void;
 	mobileOpen: boolean;
 	onMobileOpenChange: (open: boolean) => void;
+	states: string[];
 };
 
 function FilterControls({
 	filters,
 	onChange,
 	showLabels = false,
+	states,
 }: {
 	filters: Filters;
 	onChange: (f: Partial<Filters>) => void;
 	showLabels?: boolean;
+	states: string[];
 }) {
 	const tw = (fixed: string) => (showLabels ? "w-full" : `${fixed} shrink-0`);
 
@@ -106,7 +108,7 @@ function FilterControls({
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="all">All States</SelectItem>
-						{STATES.map((s) => (
+						{states.map((s) => (
 							<SelectItem key={s} value={s}>
 								{s}
 							</SelectItem>
@@ -206,6 +208,20 @@ export function MobileFilterButton({ onOpen }: { onOpen: () => void }) {
 			aria-label="Open filters"
 			className="md:hidden"
 		>
+			<SlidersHorizontal />
+		</Button>
+	);
+}
+
+export function NavButton({ onOpen }: { onOpen: () => void }) {
+	return (
+		<Button
+			variant="ghost"
+			size="icon-sm"
+			onClick={onOpen}
+			aria-label="Open navigation"
+			className="md:hidden"
+		>
 			<Menu />
 		</Button>
 	);
@@ -217,12 +233,13 @@ export function FilterBar({
 	onReset,
 	mobileOpen,
 	onMobileOpenChange,
+	states,
 }: Props) {
 	return (
 		<>
 			{/* Desktop: horizontally scrollable pill bar */}
 			<div className="hidden md:flex items-center gap-2 overflow-x-auto px-4 py-2 border-b scrollbar-none">
-				<FilterControls filters={filters} onChange={onChange} />
+				<FilterControls filters={filters} onChange={onChange} states={states} />
 			</div>
 
 			<Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
@@ -251,6 +268,7 @@ export function FilterBar({
 							filters={filters}
 							onChange={onChange}
 							showLabels
+							states={states}
 						/>
 					</div>
 					<div className="px-4 py-4 border-t mt-auto">
