@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sheet";
 import type { Filters } from "@/hooks/useFilters";
 
-
 const MAKES = [
 	"Audi",
 	"BMW",
@@ -104,7 +103,9 @@ function FilterControls({
 					}
 				>
 					<SelectTrigger className={tw("w-36")}>
-						<SelectValue>{filters.state ?? "All States"}</SelectValue>
+						<SelectValue>
+							{filters.state ?? "All States"}
+						</SelectValue>
 					</SelectTrigger>
 					<SelectContent>
 						<SelectItem value="all">All States</SelectItem>
@@ -239,7 +240,11 @@ export function FilterBar({
 		<>
 			{/* Desktop: horizontally scrollable pill bar */}
 			<div className="hidden md:flex items-center gap-2 overflow-x-auto px-4 py-2 border-b scrollbar-none">
-				<FilterControls filters={filters} onChange={onChange} states={states} />
+				<FilterControls
+					filters={filters}
+					onChange={onChange}
+					states={states}
+				/>
 			</div>
 
 			<Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
@@ -272,7 +277,11 @@ export function FilterBar({
 						/>
 					</div>
 					<div className="px-4 py-4 border-t mt-auto">
-						<Button variant="outline" className="w-full" onClick={onReset}>
+						<Button
+							variant="outline"
+							className="w-full"
+							onClick={onReset}
+						>
 							Reset filters
 						</Button>
 					</div>

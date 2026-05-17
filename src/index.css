@@ -40,7 +40,7 @@
 	--muted-foreground: oklch(0.58 0.018 264);
 	--accent: oklch(0.205 0.012 264);
 	--accent-foreground: oklch(0.93 0.006 264);
-	--destructive: oklch(0.65 0.20 22);
+	--destructive: oklch(0.65 0.2 22);
 	--border: oklch(1 0 0 / 8%);
 	--input: oklch(1 0 0 / 10%);
 	--ring: oklch(0.68 0.155 243);
@@ -72,8 +72,14 @@
 }
 
 @keyframes remove-card {
-	0%   { transform: translateY(0) scale(1); opacity: 1; }
-	100% { transform: translateY(-32px) scale(1.25); opacity: 0; }
+	0% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-32px) scale(1.25);
+		opacity: 0;
+	}
 }
 
 .animate-remove-card {
@@ -81,8 +87,14 @@
 }
 
 @keyframes hide-card {
-	0%   { transform: translateY(0) scale(1); opacity: 1; }
-	100% { transform: translateY(32px) scale(0.75); opacity: 0; }
+	0% {
+		transform: translateY(0) scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(32px) scale(0.75);
+		opacity: 0;
+	}
 }
 
 .animate-hide-card {
