@@ -1,4 +1,16 @@
-import { ChevronDown, ChevronUp, Droplet, Eye, EyeOff, Fuel, Gauge, MapPin, Settings2, Trash2 } from "lucide-react";
+import {
+	ChevronDown,
+	ChevronUp,
+	Droplet,
+	Eye,
+	EyeOff,
+	Fuel,
+	Gauge,
+	Heart,
+	MapPin,
+	Settings2,
+	Trash2,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -9,6 +21,8 @@ type Props = {
 	onHide?: (id: string) => Promise<void>;
 	onRemove?: (id: string) => Promise<void>;
 	onRestore?: (id: string) => Promise<void>;
+	onShortlist?: (id: string) => void;
+	isShortlisted?: boolean;
 };
 
 function formatPrice(price: number | null) {
@@ -27,7 +41,14 @@ function formatKmsShort(kms: number | null) {
 	return `${Math.ceil(kms / 1000)}K km`;
 }
 
-export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
+export function CarCard({
+	listing,
+	onHide,
+	onRemove,
+	onRestore,
+	onShortlist,
+	isShortlisted,
+}: Props) {
 	const [imageOpen, setImageOpen] = useState(false);
 	const [expanded, setExpanded] = useState(false);
 	const [removing, setRemoving] = useState(false);
@@ -54,7 +75,9 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 	const logoSlug = listing.make?.toLowerCase().replace(/\s+/g, "-");
 	const logoUrl = logoSlug ? `/car-hunter-ui/logos/${logoSlug}.png` : null;
 
-	const modelText = [listing.model, listing.variant].filter(Boolean).join(" ");
+	const modelText = [listing.model, listing.variant]
+		.filter(Boolean)
+		.join(" ");
 
 	const title = [listing.make, listing.model, listing.variant]
 		.filter(Boolean)
@@ -72,8 +95,11 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 
 	return (
 		<>
-			<div className={`border-b last:border-b-0${removing ? " animate-remove-card pointer-events-none" : ""}${hiding ? " animate-hide-card pointer-events-none" : ""}`}>
+			<div
+				className={`border-b last:border-b-0${removing ? " animate-remove-card pointer-events-none" : ""}${hiding ? " animate-hide-card pointer-events-none" : ""}`}
+			>
 				{/* Tile row — clicking goes to link */}
+				{/* biome-ignore lint/a11y/useSemanticElements: nested action buttons prevent wrapping in <a> */}
 				<div
 					role="link"
 					tabIndex={0}
@@ -81,8 +107,8 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 					onKeyDown={(e) => e.key === "Enter" && handleTileClick()}
 					className="flex items-center gap-3 cursor-pointer hover:bg-muted/50 transition-colors"
 				>
-					{!expanded && (
-						listing.image_url ? (
+					{!expanded &&
+						(listing.image_url ? (
 							<button
 								type="button"
 								onClick={(e) => {
@@ -100,8 +126,7 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 							</button>
 						) : (
 							<div className="shrink-0 w-12 h-12 rounded bg-muted" />
-						)
-					)}
+						))}
 
 					<div className="flex-1 min-w-0 py-2 pr-2">
 						<p className="flex items-center gap-1.5 text-sm font-medium leading-snug overflow-hidden">
@@ -111,17 +136,27 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 									src={logoUrl}
 									alt={listing.make ?? ""}
 									className="h-4 w-4 object-contain shrink-0"
-									onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+									onError={(e) => {
+										(
+											e.currentTarget as HTMLImageElement
+										).style.display = "none";
+									}}
 								/>
 							)}
-							{modelText && <span className="truncate">{modelText}</span>}
+							{modelText && (
+								<span className="truncate">{modelText}</span>
+							)}
 						</p>
 						<p className="text-sm text-muted-foreground">
 							<span className="font-semibold text-foreground">
 								{formatPrice(lowestPrice)}
 							</span>
 							{listing.kms != null && (
-								<span> · {formatKmsShort(listing.kms)}{listing.fuel ? ` • ${listing.fuel}` : ""}</span>
+								<span>
+									{" "}
+									· {formatKmsShort(listing.kms)}
+									{listing.fuel ? ` • ${listing.fuel}` : ""}
+								</span>
 							)}
 						</p>
 					</div>
@@ -135,12 +170,17 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 						className="shrink-0 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors border-l"
 						aria-label={expanded ? "Collapse" : "Expand"}
 					>
-						{expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+						{expanded ? (
+							<ChevronUp size={16} />
+						) : (
+							<ChevronDown size={16} />
+						)}
 					</button>
 				</div>
 
 				{/* Expanded details — clicks don't navigate */}
 				{expanded && (
+					// biome-ignore lint/a11y/noStaticElementInteractions: stops tile click from firing when interacting with details
 					<div
 						className="px-3 pb-3 pt-1 bg-muted/30"
 						onClick={(e) => e.stopPropagation()}
@@ -164,24 +204,51 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 							<div className="flex-1 flex flex-col justify-between">
 								<div className="flex flex-col gap-1 text-sm text-muted-foreground">
 									{listing.fuel && (
-										<span className="flex items-center gap-1.5"><Fuel size={13} />{listing.fuel}</span>
+										<span className="flex items-center gap-1.5">
+											<Fuel size={13} />
+											{listing.fuel}
+										</span>
 									)}
 									{listing.kms != null && (
-										<span className="flex items-center gap-1.5"><Gauge size={13} />{formatKms(listing.kms)}</span>
+										<span className="flex items-center gap-1.5">
+											<Gauge size={13} />
+											{formatKms(listing.kms)}
+										</span>
 									)}
 									{listing.transmission && (
-										<span className="flex items-center gap-1.5"><Settings2 size={13} />{listing.transmission}</span>
+										<span className="flex items-center gap-1.5">
+											<Settings2 size={13} />
+											{listing.transmission}
+										</span>
 									)}
 									{listing.location && (
-										<span className="flex items-center gap-1.5"><MapPin size={13} />{listing.location}</span>
+										<span className="flex items-center gap-1.5">
+											<MapPin size={13} />
+											{listing.location}
+										</span>
 									)}
 									{listing.color && (
-										<span className="flex items-center gap-1.5"><Droplet size={13} />{listing.color}</span>
+										<span className="flex items-center gap-1.5">
+											<Droplet size={13} />
+											{listing.color}
+										</span>
 									)}
 								</div>
 								<div className="flex justify-center gap-[8px] my-2">
-									{Array.from({ length: 8 }).map((_, i) => (
-										<div key={i} className="w-[3px] h-[3px] rounded-full bg-border" />
+									{[
+										"1",
+										"2",
+										"3",
+										"4",
+										"5",
+										"6",
+										"7",
+										"8",
+									].map((k) => (
+										<div
+											key={k}
+											className="w-[3px] h-[3px] rounded-full bg-border"
+										/>
 									))}
 								</div>
 								<div className="flex items-center justify-between">
@@ -198,6 +265,35 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 											</Button>
 										) : (
 											<>
+												{onShortlist && (
+													<Button
+														variant="ghost"
+														size="icon-sm"
+														onClick={() =>
+															onShortlist(
+																listing.id,
+															)
+														}
+														aria-label={
+															isShortlisted
+																? "Remove from shortlist"
+																: "Add to shortlist"
+														}
+														className={
+															isShortlisted
+																? "text-rose-500"
+																: "text-muted-foreground hover:text-rose-500"
+														}
+													>
+														<Heart
+															fill={
+																isShortlisted
+																	? "currentColor"
+																	: "none"
+															}
+														/>
+													</Button>
+												)}
 												{onHide && (
 													<Button
 														variant="ghost"
@@ -223,15 +319,20 @@ export function CarCard({ listing, onHide, onRemove, onRestore }: Props) {
 											</>
 										)}
 									</div>
-									{Object.keys(listing.sources ?? {}).length > 0 && (
+									{Object.keys(listing.sources ?? {}).length >
+										0 && (
 										<div className="flex gap-1.5">
-											{Object.entries(listing.sources).map(([source, { url }]) => (
+											{Object.entries(
+												listing.sources,
+											).map(([source, { url }]) => (
 												<a
 													key={source}
 													href={url}
 													target="_blank"
 													rel="noreferrer"
-													onClick={(e) => e.stopPropagation()}
+													onClick={(e) =>
+														e.stopPropagation()
+													}
 													title={source}
 												>
 													<img
